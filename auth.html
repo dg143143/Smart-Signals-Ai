@@ -66,7 +66,6 @@
         .message { margin-top: 15px; color: #f0ad4e; font-size: 0.9em; text-align: center; }
         .toggle-link { color: var(--header-text); cursor: pointer; text-decoration: underline; margin-top: 15px; text-align: center; }
 
-        /* Admin Panel Styles */
         #adminPanel { border-top: 1px solid var(--card-border); margin-top: 20px; padding-top: 20px; }
         #user-management h2, #user-management h3 { font-family: var(--font-headers); color: var(--header-text); }
         .user-list { list-style: none; padding: 0; }
@@ -83,10 +82,8 @@
 </head>
 <body>
     <div class="container">
-        <!-- This will contain either login forms or the admin panel -->
         <div id="auth-wrapper">
-            <!-- User Login Form (Default) -->
-            <div id="userLoginSection">
+            <div id="userLoginSection" style="display: none;">
                 <div class="login-header"><i class="fas fa-satellite-dish"></i> User Login</div>
                 <input type="text" id="username" placeholder="Username" required>
                 <input type="password" id="password" placeholder="Password" required>
@@ -96,18 +93,16 @@
                 <div id="showAdminLogin" class="toggle-link">Admin Login</div>
             </div>
 
-            <!-- Admin Login Form (Hidden by default) -->
-            <div id="adminLoginSection" style="display: none;">
+            <div id="adminLoginSection">
                 <div class="login-header"><i class="fas fa-user-shield"></i> Admin Login</div>
                 <input type="text" id="adminUsername" placeholder="Admin Username">
                 <input type="password" id="adminPassword" placeholder="Admin Password">
                 <button id="adminLoginBtn" class="btn-primary">Login</button>
                 <div id="adminLoginMessage" class="message"></div>
-                <div id="showUserLogin" class="toggle-link">User Login</div>
+                <div id="showUserLogin" class="toggle-link" style="display: none;">User Login</div>
             </div>
         </div>
 
-        <!-- Admin Panel (Hidden by default, replaces auth-wrapper on login) -->
         <div id="adminPanel" style="display: none;">
             <div class="login-header"><i class="fas fa-user-shield"></i> Admin Panel</div>
             <div id="user-management">
@@ -123,7 +118,7 @@
         </div>
     </div>
 
-    <script src="db.js?v=1.1"></script>
-    <script src="auth.js?v=1.1"></script>
+    <script src="db.js"></script>
+    <script src="auth.js"></script>
 </body>
 </html>

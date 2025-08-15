@@ -1,86 +1,53 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Overall Page Elements ---
+    // --- Page Elements ---
     const authWrapper = document.getElementById('auth-wrapper');
     const adminPanel = document.getElementById('adminPanel');
-
-    // --- View Toggling ---
-    const userLoginSection = document.getElementById('userLoginSection');
     const adminLoginSection = document.getElementById('adminLoginSection');
-    const showAdminLoginBtn = document.getElementById('showAdminLogin');
-    const showUserLoginBtn = document.getElementById('showUserLogin');
 
-    // --- User Login Elements ---
-    const loginBtn = document.getElementById('loginBtn');
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
-    const userMessageDiv = document.getElementById('userLoginMessage');
-
-    // --- Admin Login Elements ---
+    // --- Admin Login ---
     const adminLoginBtn = document.getElementById('adminLoginBtn');
     const adminUsernameInput = document.getElementById('adminUsername');
     const adminPasswordInput = document.getElementById('adminPassword');
     const adminMessageDiv = document.getElementById('adminLoginMessage');
 
-    // --- Admin Panel Elements ---
+    // --- Admin Panel ---
     const userList = document.getElementById('userList');
     const createUserBtn = document.getElementById('createUserBtn');
     const adminLogoutBtn = document.getElementById('adminLogoutBtn');
 
-    // --- Initial State Check ---
-    // If admin is logged in, show panel immediately. Otherwise, check for user.
+    // --- Initial State ---
+    // Check if admin is already logged in from a previous session
     if (sessionStorage.getItem('isAdminLoggedIn')) {
         displayAdminPanel();
-    } else if (sessionStorage.getItem('isUserLoggedIn')) {
-        window.location.href = 'index.html';
     }
 
     // --- Event Listeners ---
-    showAdminLoginBtn.addEventListener('click', () => toggleLoginView(true));
-    showUserLoginBtn.addEventListener('click', () => toggleLoginView(false));
-
-    loginBtn.addEventListener('click', handleUserLogin);
     adminLoginBtn.addEventListener('click', handleAdminLogin);
+    adminPasswordInput.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') handleAdminLogin();
+    });
 
     createUserBtn.addEventListener('click', handleCreateUser);
     adminLogoutBtn.addEventListener('click', handleAdminLogout);
 
-    // --- View-Switching Logic ---
-    function toggleLoginView(showAdmin) {
-        userLoginSection.style.display = showAdmin ? 'none' : 'block';
-        adminLoginSection.style.display = showAdmin ? 'block' : 'none';
-    }
+    // --- Main Functions ---
 
-    // --- User Login Logic ---
-    function handleUserLogin() {
-        const username = usernameInput.value.trim();
-        const password = passwordInput.value.trim();
-        if (!username || !password) {
-            showMessage(userMessageDiv, 'Please enter both username and password.');
-            return;
-        }
-        const user = findUserByUsername(username);
-        if (!user || user.password !== password) {
-            showMessage(userMessageDiv, 'Invalid username or password.');
-            return;
-        }
-        if (!user.approved) {
-            showMessage(userMessageDiv, 'Your account is pending approval. Please contact an admin.');
-            return;
-        }
-        sessionStorage.setItem('isUserLoggedIn', 'true');
-        sessionStorage.setItem('loggedInUsername', user.username);
-        window.location.href = 'index.html';
-    }
-
-    // --- Admin Login & Panel Logic ---
     function handleAdminLogin() {
-        const username = adminUsernameInput.value;
-        const password = adminPasswordInput.value;
+        const username = adminUsernameInput.value.trim();
+        const password = adminPasswordInput.value.trim();
+
+        if (!username || !password) {
+            showMessage(adminMessageDiv, 'Please enter both username and password.');
+            return;
+        }
+
         if (checkAdminCredentials(username, password)) {
             sessionStorage.setItem('isAdminLoggedIn', 'true');
             displayAdminPanel();
         } else {
             showMessage(adminMessageDiv, 'Invalid admin credentials.');
+            // Clear password field on failed attempt
+            adminPasswordInput.value = '';
         }
     }
 
@@ -100,39 +67,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderUserList() {
         const users = getAllUsers();
-        userList.innerHTML = '';
+        userList.innerHTML = ''; // Clear the list
+
         if (users.length === 0) {
-            userList.innerHTML = '<li>No users found.</li>';
+            userList.innerHTML = '<li>No users have been created yet.</li>';
             return;
         }
+
         users.forEach(user => {
             const userItem = document.createElement('li');
             userItem.className = `user-item ${user.approved ? '' : 'pending'}`;
             userItem.innerHTML = `
                 <div class="user-details">
-                    <strong>ID:</strong> ${user.id} | <strong>User:</strong> ${user.username} |
-                    <strong>Status:</strong> ${user.approved ? '<span style="color: var(--button-bg);">Approved</span>' : '<span style="color: #f0ad4e;">Pending</span>'}
+                    <strong>User:</strong> ${user.username} |
+                    <strong>Status:</strong> ${user.approved ? '<span style="color: var(--button-bg);">Approved</span>' : '<span style="color: #f0ad4e;">Pending Approval</span>'}
                 </div>
                 <div class="user-actions">
                     <button class="btn-secondary approve-btn" data-id="${user.id}" data-approved="${user.approved}">
-                        ${user.approved ? 'Unapprove' : 'Approve'}
+                        ${user.approved ? 'Revoke' : 'Approve'}
                     </button>
                     <button class="btn-danger remove-btn" data-id="${user.id}">Remove</button>
                 </div>`;
             userList.appendChild(userItem);
         });
 
+        // Attach event listeners to the newly created buttons
         document.querySelectorAll('.approve-btn').forEach(button => {
             button.addEventListener('click', e => {
-                approveUser(parseInt(e.target.dataset.id), e.target.dataset.approved !== 'true');
-                renderUserList();
+                const userId = parseInt(e.target.dataset.id);
+                const isApproved = e.target.dataset.approved === 'true';
+                approveUser(userId, !isApproved); // Toggle approval
+                renderUserList(); // Re-render the list to show the change
             });
         });
+
         document.querySelectorAll('.remove-btn').forEach(button => {
             button.addEventListener('click', e => {
-                if (confirm(`Are you sure you want to remove user with ID ${e.target.dataset.id}?`)) {
-                    removeUser(parseInt(e.target.dataset.id));
-                    renderUserList();
+                const userId = parseInt(e.target.dataset.id);
+                if (confirm(`Are you sure you want to remove this user? This action cannot be undone.`)) {
+                    removeUser(userId);
+                    renderUserList(); // Re-render
                 }
             });
         });
@@ -142,22 +116,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const usernameInput = document.getElementById('newUsername');
         const passwordInput = document.getElementById('newPassword');
         const username = usernameInput.value.trim();
-        if (!username || !passwordInput.value) {
-            alert('Please provide both username and password.');
+        const password = passwordInput.value.trim();
+
+        if (!username || !password) {
+            alert('Please provide a username and password for the new user.');
             return;
         }
         if (findUserByUsername(username)) {
-            alert('Username already exists.');
+            alert('This username is already taken. Please choose another.');
             return;
         }
-        addUser(username, passwordInput.value);
-        alert(`User "${username}" created successfully. They need to be approved to log in.`);
+
+        addUser(username, password);
+        alert(`User "${username}" created successfully. You now need to approve them to grant access.`);
+
+        // Clear the input fields
         usernameInput.value = '';
         passwordInput.value = '';
-        renderUserList();
+
+        renderUserList(); // Refresh the user list
     }
 
     function showMessage(element, msg) {
         element.textContent = msg;
+        // Clear message after 3 seconds
+        setTimeout(() => {
+            element.textContent = '';
+        }, 3000);
     }
 });

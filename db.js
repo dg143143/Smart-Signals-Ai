@@ -1,60 +1,35 @@
 // --- Simple Database using localStorage ---
 
 function initializeDB() {
-    let db = localStorage.getItem('smartSignalDB');
-    let shouldReinitialize = false;
-
-    if (db) {
-        try {
-            db = JSON.parse(db);
-            // Check for a critical part of the DB, like the admin object or users array
-            if (!db.admin || !db.admin.username || !db.users) {
-                console.log("DB corruption detected (missing keys). Re-initializing.");
-                shouldReinitialize = true;
-            }
-        } catch (e) {
-            // If parsing fails, the data is corrupt
-            console.log("DB corruption detected (JSON parse failed). Re-initializing.");
-            shouldReinitialize = true;
-        }
-    } else {
-        // If no DB exists at all
-        shouldReinitialize = true;
+    // Check if the database is already initialized
+    if (localStorage.getItem('smartSignalDB_v2')) {
+        return;
     }
 
-    if (!shouldReinitialize) {
-        return; // DB is valid, do nothing.
-    }
-
-    // Default admin credentials
+    // Admin credentials as requested
     const adminUser = {
         username: 'DG143',
-        password: 'adminpassword' // In a real app, this should be hashed
+        password: 'DG143' // In a real app, this should be hashed
     };
 
-    // Default user list
-    const users = [
-        { id: 1, username: 'user1', password: 'password1', approved: true },
-        { id: 2, username: 'user2', password: 'password2', approved: false },
-        { id: 3, username: 'user3', password: 'password3', approved: true },
-    ];
+    // Start with an empty user list
+    const users = [];
 
-    const newDb = {
+    const db = {
         admin: adminUser,
         users: users,
-        nextUserId: 4
+        nextUserId: 1
     };
 
-    localStorage.setItem('smartSignalDB', JSON.stringify(newDb));
-    console.log("SmartSignalDB has been successfully initialized/repaired.");
+    localStorage.setItem('smartSignalDB_v2', JSON.stringify(db));
 }
 
 function getDB() {
-    return JSON.parse(localStorage.getItem('smartSignalDB'));
+    return JSON.parse(localStorage.getItem('smartSignalDB_v2'));
 }
 
 function saveDB(db) {
-    localStorage.setItem('smartSignalDB', JSON.stringify(db));
+    localStorage.setItem('smartSignalDB_v2', JSON.stringify(db));
 }
 
 // --- Admin Functions ---

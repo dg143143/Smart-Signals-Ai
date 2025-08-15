@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <script>
-    // Redirect to login if not authenticated
-    if (!sessionStorage.getItem('isUserLoggedIn')) {
+    // Protect this page - redirect to login if not authenticated as admin
+    if (!sessionStorage.getItem('isAdminLoggedIn')) {
       window.location.href = 'auth.html';
     }
   </script>
@@ -130,7 +130,6 @@
       background: var(--header-bg);
       color: var(--header-text);
       padding: 16px;
-      text-align: center;
       font-size: 1.5em;
       font-weight: 600;
       font-family: var(--font-headers);
@@ -145,6 +144,7 @@
     .user-info {
         font-size: 0.6em;
         text-align: right;
+        font-family: var(--font-main);
     }
 
     .user-info button {
@@ -155,7 +155,7 @@
         border-radius: 4px;
         cursor: pointer;
         font-size: 0.9em;
-        margin-left: 5px;
+        margin-left: 10px;
         width: auto;
     }
 
@@ -437,7 +437,7 @@
     <div class="widget-header">
       <span>🚀 SmartSignal Pro v2 - Elite AI Edition</span>
       <div class="user-info">
-        <span id="username-display"></span>
+        <span id="welcome-message"></span>
         <button id="logoutBtn">Logout</button>
       </div>
     </div>
@@ -472,18 +472,19 @@
 
     // Initialize theme from localStorage
     document.addEventListener('DOMContentLoaded', () => {
-      // Display username and handle logout
-      const username = sessionStorage.getItem('loggedInUsername');
-      if (username) {
-          const usernameDisplay = document.getElementById('username-display');
-          if(usernameDisplay) usernameDisplay.textContent = `Welcome, ${username}`;
+      // Add logout functionality and welcome message
+      const logoutBtn = document.getElementById('logoutBtn');
+      const welcomeMsg = document.getElementById('welcome-message');
+
+      if (welcomeMsg) {
+        // Since only admin can log in, we can hardcode the welcome message for now
+        welcomeMsg.textContent = 'Welcome, Admin (DG143)';
       }
 
-      const logoutBtn = document.getElementById('logoutBtn');
-      if(logoutBtn) {
+      if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
-            sessionStorage.clear();
-            window.location.href = 'login.html';
+          sessionStorage.removeItem('isAdminLoggedIn');
+          window.location.href = 'auth.html';
         });
       }
 
