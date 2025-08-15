@@ -1,10 +1,8 @@
 // --- Simple Database using localStorage ---
 
 function initializeDB() {
-    // Check if the database is already initialized
-    if (localStorage.getItem('smartSignalDB_v2')) {
-        return;
-    }
+    // For this application, we always reset the database on load to ensure a clean state
+    // and prevent issues with cached or old localStorage data.
 
     // Admin credentials as requested
     const adminUser = {
