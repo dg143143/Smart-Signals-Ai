@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SmartSignal Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #0a0a12;
+            --bg-secondary: #0f1525;
+            --card-border: #005ce6;
+            --text-primary: #e0e0e0;
+            --header-bg: #0d1b2a;
+            --header-text: #00d084;
+            --button-bg: #00a86b;
+            --button-hover: #00c88b;
+            --danger-bg: #d00;
+            --danger-hover: #a00;
+            --font-main: 'Courier New', 'Lucida Console', monospace;
+            --font-headers: 'Orbitron', 'Arial', sans-serif;
+        }
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+            font-family: var(--font-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,92,230,0.25);
+        }
+        .login-header {
+            color: var(--header-text);
+            font-family: var(--font-headers);
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        input {
+            padding: 12px; margin: 10px 0; width: 100%; border: 1px solid #555;
+            border-radius: 6px; font-size: 16px; background: var(--bg-primary);
+            color: var(--text-primary); font-family: var(--font-main); box-sizing: border-box;
+        }
+        button {
+            padding: 12px 20px; margin: 10px 0; border: none; border-radius: 6px;
+            font-size: 16px; cursor: pointer; font-family: var(--font-headers);
+            text-transform: uppercase; letter-spacing: 1px; font-weight: bold; width: 100%;
+        }
+        .btn-primary { background: var(--button-bg); color: white; }
+        .btn-primary:hover { background: var(--button-hover); }
+        .btn-danger { background: var(--danger-bg); color: white; width: auto; }
+        .btn-danger:hover { background: var(--danger-hover); }
+        .btn-secondary { background: #444; color: white; }
+        .btn-secondary:hover { background: #666; }
+        .message { margin-top: 15px; color: #f0ad4e; font-size: 0.9em; text-align: center; }
+        .toggle-link { color: var(--header-text); cursor: pointer; text-decoration: underline; margin-top: 15px; text-align: center; }
+
+        /* Admin Panel Styles */
+        #adminPanel { border-top: 1px solid var(--card-border); margin-top: 20px; padding-top: 20px; }
+        #user-management h2, #user-management h3 { font-family: var(--font-headers); color: var(--header-text); }
+        .user-list { list-style: none; padding: 0; }
+        .user-item {
+            background: var(--bg-primary); padding: 15px; margin: 10px 0; border-radius: 8px;
+            border-left: 5px solid var(--card-border); display: flex; justify-content: space-between;
+            align-items: center; flex-wrap: wrap;
+        }
+        .user-item.pending { border-left-color: #f0ad4e; }
+        .user-details { flex-grow: 1; }
+        .user-actions { display: flex; gap: 10px; margin-top: 10px; }
+        @media (min-width: 600px) { .user-actions { margin-top: 0; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- This will contain either login forms or the admin panel -->
+        <div id="auth-wrapper">
+            <!-- User Login Form (Default) -->
+            <div id="userLoginSection">
+                <div class="login-header"><i class="fas fa-satellite-dish"></i> User Login</div>
+                <input type="text" id="username" placeholder="Username" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button id="loginBtn" class="btn-primary">Login</button>
+                <div id="userLoginMessage" class="message"></div>
+                <div class="message"><p>Don't have an account? Ask an admin to create one for you.</p></div>
+                <div id="showAdminLogin" class="toggle-link">Admin Login</div>
+            </div>
+
+            <!-- Admin Login Form (Hidden by default) -->
+            <div id="adminLoginSection" style="display: none;">
+                <div class="login-header"><i class="fas fa-user-shield"></i> Admin Login</div>
+                <input type="text" id="adminUsername" placeholder="Admin Username">
+                <input type="password" id="adminPassword" placeholder="Admin Password">
+                <button id="adminLoginBtn" class="btn-primary">Login</button>
+                <div id="adminLoginMessage" class="message"></div>
+                <div id="showUserLogin" class="toggle-link">User Login</div>
+            </div>
+        </div>
+
+        <!-- Admin Panel (Hidden by default, replaces auth-wrapper on login) -->
+        <div id="adminPanel" style="display: none;">
+            <div class="login-header"><i class="fas fa-user-shield"></i> Admin Panel</div>
+            <div id="user-management">
+                <h2><i class="fas fa-users-cog"></i> User Management</h2>
+                <h3><i class="fas fa-user-plus"></i> Create New User</h3>
+                <input type="text" id="newUsername" placeholder="Username">
+                <input type="password" id="newPassword" placeholder="Password">
+                <button id="createUserBtn" class="btn-primary">Create User</button>
+                <h3><i class="fas fa-users"></i> Registered Users</h3>
+                <ul id="userList" class="user-list"></ul>
+            </div>
+            <button id="adminLogoutBtn" class="btn-danger">Logout</button>
+        </div>
+    </div>
+
+    <script src="db.js"></script>
+    <script src="auth.js"></script>
+</body>
+</html>

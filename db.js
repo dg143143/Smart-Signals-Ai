@@ -1,9 +1,29 @@
 // --- Simple Database using localStorage ---
 
 function initializeDB() {
-    // Check if the database is already initialized
-    if (localStorage.getItem('smartSignalDB')) {
-        return;
+    let db = localStorage.getItem('smartSignalDB');
+    let shouldReinitialize = false;
+
+    if (db) {
+        try {
+            db = JSON.parse(db);
+            // Check for a critical part of the DB, like the admin object or users array
+            if (!db.admin || !db.admin.username || !db.users) {
+                console.log("DB corruption detected (missing keys). Re-initializing.");
+                shouldReinitialize = true;
+            }
+        } catch (e) {
+            // If parsing fails, the data is corrupt
+            console.log("DB corruption detected (JSON parse failed). Re-initializing.");
+            shouldReinitialize = true;
+        }
+    } else {
+        // If no DB exists at all
+        shouldReinitialize = true;
+    }
+
+    if (!shouldReinitialize) {
+        return; // DB is valid, do nothing.
     }
 
     // Default admin credentials
@@ -19,13 +39,14 @@ function initializeDB() {
         { id: 3, username: 'user3', password: 'password3', approved: true },
     ];
 
-    const db = {
+    const newDb = {
         admin: adminUser,
         users: users,
         nextUserId: 4
     };
 
-    localStorage.setItem('smartSignalDB', JSON.stringify(db));
+    localStorage.setItem('smartSignalDB', JSON.stringify(newDb));
+    console.log("SmartSignalDB has been successfully initialized/repaired.");
 }
 
 function getDB() {
