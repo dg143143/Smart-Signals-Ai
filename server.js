@@ -126,6 +126,8 @@ app.delete('/api/users/:id', (req, res) => {
 
     writeDB(db);
     res.status(204).send(); // No Content
+
+    
 });
 
 
