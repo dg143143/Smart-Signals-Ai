@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SmartSignal Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #0a0a12;
+            --bg-secondary: #0f1525;
+            --card-border: #005ce6;
+            --text-primary: #e0e0e0;
+            --header-bg: #0d1b2a;
+            --header-text: #00d084;
+            --button-bg: #00a86b;
+            --button-hover: #00c88b;
+            --font-main: 'Courier New', 'Lucida Console', monospace;
+            --font-headers: 'Orbitron', 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+            font-family: var(--font-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-container {
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,92,230,0.25);
+            text-align: center;
+        }
+
+        .login-header {
+            color: var(--header-text);
+            font-family: var(--font-headers);
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+
+        input {
+            padding: 12px;
+            margin: 10px 0;
+            width: 100%;
+            border: 1px solid #555;
+            border-radius: 6px;
+            font-size: 16px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--card-border);
+            box-shadow: 0 0 5px var(--card-border);
+        }
+
+        button {
+            padding: 12px 20px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-family: var(--font-headers);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+            width: 100%;
+            background: var(--button-bg);
+            color: white;
+        }
+
+        button:hover {
+            background: var(--button-hover);
+        }
+
+        .message {
+            margin-top: 15px;
+            color: #f0ad4e;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="login-header">
+            <i class="fas fa-satellite-dish"></i> SmartSignal Pro
+        </div>
+
+        <input type="text" id="username" placeholder="Username" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button id="loginBtn">Login</button>
+
+        <div id="loginMessage" class="message"></div>
+        <div class="message">
+            <p>Don't have an account? Ask an admin to create one for you.</p>
+        </div>
+         <div class="message">
+            <a href="/admin.html">Admin Login</a>
+        </div>
+    </div>
+
+    <script src="db.js"></script>
+    <script src="login.js"></script>
+</body>
+</html>
